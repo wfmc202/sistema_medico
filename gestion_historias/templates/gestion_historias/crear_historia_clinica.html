@@ -23,14 +23,14 @@
             <div class="alert alert-danger">
                 <strong>Por favor, corrija los siguientes errores:</strong>
                 <ul>
-                    {% for field, errors in paciente_form.errors.items %}
-                        {% for error in errors %}
-                            <li>{{ paciente_form|getattr:field.label|default:field }}: {{ error }}</li>
+                    {% for field_name, field_errors in paciente_form.errors.items %}
+                        {% for error in field_errors %}
+                            <li>{{ paciente_form|getattr:field_name.label|default:field_name }}: {{ error }}</li>
                         {% endfor %}
                     {% endfor %}
-                    {% for field, errors in historia_form.errors.items %}
-                        {% for error in errors %}
-                            <li>{{ historia_form|getattr:field.label|default:field }}: {{ error }}</li>
+                    {% for field_name, field_errors in historia_form.errors.items %}
+                         {% for error in field_errors %}
+                            <li>{{ historia_form|getattr:field_name.label|default:field_name }}: {{ error }}</li>
                         {% endfor %}
                     {% endfor %}
                      {% for error in paciente_form.non_field_errors %}
@@ -45,7 +45,7 @@
 
         <!-- Información Personal del Paciente -->
         <div class="section">
-            <div class="section-header">Información Personal del Paciente ({{ paciente_form.prefix }})</div>
+            <div class="section-header">Información Personal del Paciente</div>
             <div class="section-content">
                 {% for field in paciente_form %}
                     <div class="form-row">
@@ -62,7 +62,7 @@
 
         <!-- Información General de la Historia -->
         <div class="section">
-            <div class="section-header">Información General de la Historia ({{ historia_form.prefix }})</div>
+            <div class="section-header">Información General de la Historia</div>
             <div class="section-content">
                 <div class="form-row">
                     <div class="form-group medium">
@@ -97,7 +97,7 @@
                      <div class="form-group large">
                         {{ historia_form.prioridad_triaje.label_tag }}
                         <div class="priority-scale">
-                            {% for radio in historia_form.prioridad_triaje %} {# Esto renderiza como <li> por defecto con RadioSelect, ajustamos CSS o el widget #}
+                            {% for radio in historia_form.prioridad_triaje %}
                             <div class="priority-item level-{{ forloop.counter }}">
                                 {{ radio.tag }}
                                 <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
@@ -128,7 +128,7 @@
             <div class="section-content">
                 <div class="checkbox-group">
                     {% for field in historia_form %}
-                        {% if field.name|slice:":6" == "llego_" %} {# Campos que empiezan con "llego_" #}
+                        {% if field.name|slice:":6" == "llego_" %}
                             <div class="checkbox-item">
                                 {{ field }} {{ field.label_tag }}
                                 {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
@@ -332,28 +332,12 @@
 
 {% block extra_js %}
 <script>
-// Script para manejar la selección de prioridad de triaje visualmente si es necesario,
-// o cualquier otra interactividad del lado del cliente.
-// Por ahora, el widget RadioSelect de Django para prioridad_triaje debería ser suficiente.
-// Si se necesita que los radio buttons no se rendericen como <li> (comportamiento por defecto de RadioSelect)
-// se puede personalizar el widget en forms.py o ajustar el CSS aquí.
-
-// Para asegurar que los mensajes de error de Django sean visibles con estilos de Bootstrap:
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.invalid-feedback').forEach(function(el){
         if (el.textContent.trim() !== "") {
             el.style.display = 'block';
         }
     });
-    // Ajuste para el widget RadioSelect si es necesario (ej. si Django lo envuelve en <ul><li>)
-    // const priorityScale = document.querySelector('.priority-scale');
-    // if (priorityScale && priorityScale.querySelector('ul')) {
-    //     const ul = priorityScale.querySelector('ul');
-    //     ul.classList.add('list-unstyled', 'd-flex', 'flex-wrap', 'gap-2'); // Clases Bootstrap
-    //     ul.querySelectorAll('li').forEach(li => {
-    //         // Mover contenido del li directamente al div.priority-item si es necesario
-    //     });
-    // }
 });
 </script>
 {% endblock %}
