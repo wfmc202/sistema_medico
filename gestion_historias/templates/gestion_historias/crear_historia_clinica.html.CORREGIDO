@@ -1,0 +1,373 @@
+{% extends "gestion_historias/base_template.html" %}
+
+{% block title %}Crear Nueva Historia Clínica de Emergencia{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Historia Clínica Sala de Emergencia</h1>
+        <div class="version">DEM-FOCEAS-001 Versión: 02</div>
+        <div class="date">Fecha de aprobación: 20/6/2022</div>
+    </div>
+
+    <form method="post" class="form-content">
+        {% csrf_token %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if paciente_form.errors or historia_form.errors %}
+            <div class="alert alert-danger">
+                <strong>Por favor, corrija los siguientes errores:</strong>
+                <ul>
+                    {% for field_name, field_errors in paciente_form.errors.items %}
+                        {% for error in field_errors %}
+                            <li>{{ paciente_form|getattr:field_name.label|default:field_name }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for field_name, field_errors in historia_form.errors.items %}
+                         {% for error in field_errors %}
+                            <li>{{ historia_form|getattr:field_name.label|default:field_name }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                     {% for error in paciente_form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    {% for error in historia_form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Información Personal del Paciente -->
+        <div class="section">
+            <div class="section-header">Información Personal del Paciente</div>
+            <div class="section-content">
+                {% for field in paciente_form %}
+                    <div class="form-row">
+                        <div class="form-group {% if field.name == 'nombre' or field.name == 'direccion' or field.name == 'alergias' %}full{% elif field.name == 'cedula' or field.name == 'aseguradora' or field.name == 'nss' %}large{% elif field.name == 'sexo' or field.name == 'edad' or field.name == 'fecha_nacimiento' or field.name == 'grupo_sanguineo' or field.name == 'peso_kg' or field.name == 'talla_cm' %}medium{% else %}small{% endif %}">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+                            {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Información General de la Historia -->
+        <div class="section">
+            <div class="section-header">Información General de la Historia</div>
+            <div class="section-content">
+                <div class="form-row">
+                    <div class="form-group medium">
+                        {{ historia_form.fecha_llegada.label_tag }}
+                        {{ historia_form.fecha_llegada }}
+                        {% for error in historia_form.fecha_llegada.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group medium">
+                        {{ historia_form.hora_llegada.label_tag }}
+                        {{ historia_form.hora_llegada }}
+                        {% for error in historia_form.hora_llegada.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                     <div class="form-group">
+                        {{ historia_form.numero_expediente_clinico.label_tag }}
+                        {{ historia_form.numero_expediente_clinico }}
+                        {% for error in historia_form.numero_expediente_clinico.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group medium">
+                        {{ historia_form.fecha_clasificacion.label_tag }}
+                        {{ historia_form.fecha_clasificacion }}
+                        {% for error in historia_form.fecha_clasificacion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group medium">
+                        {{ historia_form.hora_clasificacion.label_tag }}
+                        {{ historia_form.hora_clasificacion }}
+                        {% for error in historia_form.hora_clasificacion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                     <div class="form-group large">
+                        {{ historia_form.prioridad_triaje.label_tag }}
+                        <div class="priority-scale">
+                            {% for radio in historia_form.prioridad_triaje %}
+                            <div class="priority-item level-{{ forloop.counter }}">
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% for error in historia_form.prioridad_triaje.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                 <div class="form-row">
+                    <div class="form-group medium">
+                        {{ historia_form.fecha_fin_clasificacion.label_tag }}
+                        {{ historia_form.fecha_fin_clasificacion }}
+                        {% for error in historia_form.fecha_fin_clasificacion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group medium">
+                        {{ historia_form.hora_fin_clasificacion.label_tag }}
+                        {{ historia_form.hora_fin_clasificacion }}
+                        {% for error in historia_form.hora_fin_clasificacion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vía de Llegada -->
+        <div class="section">
+            <div class="section-header">Vía de Llegada</div>
+            <div class="section-content">
+                <div class="checkbox-group">
+                    {% for field in historia_form.visible_fields %}
+                        {% if field.name|slice:":6" == "llego_" %}
+                            <div class="checkbox-item">
+                                {{ field }} {{ field.label_tag }}
+                                {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                 <div class="form-row mt-3">
+                    <div class="form-group">
+                        {{ historia_form.paramedico_responsable.label_tag }}
+                        {{ historia_form.paramedico_responsable }}
+                        {% for error in historia_form.paramedico_responsable.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ historia_form.ambulancia_numero.label_tag }}
+                        {{ historia_form.ambulancia_numero }}
+                        {% for error in historia_form.ambulancia_numero.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acompañante -->
+        <div class="section">
+            <div class="section-header">Información del Acompañante</div>
+            <div class="section-content">
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ historia_form.acompanante_nombre.label_tag }}
+                        {{ historia_form.acompanante_nombre }}
+                        {% for error in historia_form.acompanante_nombre.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ historia_form.acompanante_parentesco.label_tag }}
+                        {{ historia_form.acompanante_parentesco }}
+                        {% for error in historia_form.acompanante_parentesco.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                     <div class="form-group">
+                        {{ historia_form.acompanante_telefono.label_tag }}
+                        {{ historia_form.acompanante_telefono }}
+                        {% for error in historia_form.acompanante_telefono.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full">
+                        {{ historia_form.acompanante_direccion.label_tag }}
+                        {{ historia_form.acompanante_direccion }}
+                        {% for error in historia_form.acompanante_direccion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivos de la Consulta -->
+        <div class="section">
+            <div class="section-header">Motivos de la Consulta</div>
+            <div class="section-content">
+                <label>Seleccione los motivos:</label>
+                <div class="checkbox-group">
+                    {% for field in historia_form.visible_fields %}
+                        {% if field.name|slice:":7" == "motivo_" and field.name != "motivo_otros_descripcion" and field.name != "motivo_consulta_principal_descripcion" %}
+                             <div class="checkbox-item">
+                                {{ field }} {{ field.label_tag }}
+                                {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="form-group full mt-3">
+                    {{ historia_form.motivo_otros_descripcion.label_tag }}
+                    {{ historia_form.motivo_otros_descripcion }}
+                    {% for error in historia_form.motivo_otros_descripcion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="form-group full mt-3">
+                    {{ historia_form.motivo_consulta_principal_descripcion.label_tag }}
+                    {{ historia_form.motivo_consulta_principal_descripcion }}
+                    {% for error in historia_form.motivo_consulta_principal_descripcion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                 <div class="form-group full mt-3">
+                    {{ historia_form.enfermedad_actual_historia.label_tag }}
+                    {{ historia_form.enfermedad_actual_historia }}
+                    {% for error in historia_form.enfermedad_actual_historia.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Antecedentes -->
+        <div class="section">
+            <div class="section-header">Antecedentes</div>
+            <div class="section-content">
+                {% for field in historia_form.visible_fields %}
+                    {% if field.name|slice:":13" == "antecedentes_" or field.name == "habitos_toxicos" or field.name == "medicamentos_uso_actual" %}
+                        <div class="form-group full">
+                            {{ field.label_tag }} {{ field }}
+                            {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Revisión por Sistemas -->
+        <div class="section">
+            <div class="section-header">Revisión por Sistemas</div>
+            <div class="section-content">
+                 <div class="form-group full">
+                    {{ historia_form.revision_sistemas_descripcion.label_tag }}
+                    {{ historia_form.revision_sistemas_descripcion }}
+                    {% for error in historia_form.revision_sistemas_descripcion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales y Escala de Glasgow -->
+        <div class="section">
+            <div class="section-header">Signos Vitales y Escala de Glasgow</div>
+            <div class="section-content">
+                <div class="vital-signs">
+                    {% for field in historia_form.visible_fields %}
+                        {% if field.name == 'presion_arterial_sistolica' or field.name == 'presion_arterial_diastolica' or field.name == 'frecuencia_cardiaca_lpm' or field.name == 'frecuencia_respiratoria_rpm' or field.name == 'temperatura_celsius' or field.name == 'saturacion_oxigeno_porc' or field.name == 'glucometria_mg_dl' %}
+                            <div class="vital-item">
+                                {{ field.label_tag }} {{ field }}
+                                {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="glasgow-scale mt-4">
+                    <h5>Escala de Glasgow</h5>
+                    <div class="glasgow-row">
+                        {% for field in historia_form.visible_fields %}
+                            {% if field.name|slice:":8" == "glasgow_" %}
+                                <div class="form-group">
+                                    {{ field.label_tag }} {{ field }}
+                                    {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examen Físico -->
+        <div class="section">
+            <div class="section-header">Examen Físico</div>
+            <div class="section-content">
+                <div class="form-group full">
+                    {{ historia_form.examen_fisico_descripcion.label_tag }}
+                    {{ historia_form.examen_fisico_descripcion }}
+                    {% for error in historia_form.examen_fisico_descripcion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="section">
+            <div class="section-header">Diagnóstico</div>
+            <div class="section-content">
+                <div class="form-group full">
+                    {{ historia_form.diagnostico_presuntivo.label_tag }}
+                    {{ historia_form.diagnostico_presuntivo }}
+                    {% for error in historia_form.diagnostico_presuntivo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="form-row">
+                    <div class="form-group medium">
+                        {{ historia_form.diagnostico_definitivo_cie10.label_tag }}
+                        {{ historia_form.diagnostico_definitivo_cie10 }}
+                        {% for error in historia_form.diagnostico_definitivo_cie10.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group large">
+                        {{ historia_form.diagnostico_definitivo_descripcion.label_tag }}
+                        {{ historia_form.diagnostico_definitivo_descripcion }}
+                        {% for error in historia_form.diagnostico_definitivo_descripcion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan de Tratamiento y Destino del Paciente -->
+        <div class="section">
+            <div class="section-header">Plan de Tratamiento y Destino del Paciente</div>
+            <div class="section-content">
+                <div class="form-group full">
+                    {{ historia_form.plan_tratamiento_indicaciones.label_tag }}
+                    {{ historia_form.plan_tratamiento_indicaciones }}
+                    {% for error in historia_form.plan_tratamiento_indicaciones.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+
+                <label class="mt-3">Destino del Paciente:</label>
+                <div class="checkbox-group">
+                     {% for field in historia_form.visible_fields %}
+                        {% if field.name|slice:":8" == "destino_" and field.name != "destino_paciente_observaciones" %}
+                             <div class="checkbox-item">
+                                {{ field }} {{ field.label_tag }}
+                                {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="form-group full mt-3">
+                    {{ historia_form.destino_paciente_observaciones.label_tag }}
+                    {{ historia_form.destino_paciente_observaciones }}
+                    {% for error in historia_form.destino_paciente_observaciones.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Firmas (Sección visual, no funcional para guardado de datos por ahora) -->
+        <div class="section">
+            <div class="section-header">Firmas</div>
+            <div class="section-content">
+                <div class="signature-section">
+                    <div class="signature-box">
+                        Firma y Sello del Médico Residente de Emergencia
+                    </div>
+                    <div class="signature-box">
+                        Firma y Sello del Médico Tratante
+                    </div>
+                </div>
+                 <p class="mt-3 text-center">Médico que realiza la historia: {{ request.user.get_full_name|default:request.user.username }}</p>
+            </div>
+        </div>
+
+        <div class="form-row mt-4 justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Guardar Historia Clínica</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.invalid-feedback').forEach(function(el){
+        if (el.textContent.trim() !== "") {
+            el.style.display = 'block';
+        }
+    });
+});
+</script>
+{% endblock %}
