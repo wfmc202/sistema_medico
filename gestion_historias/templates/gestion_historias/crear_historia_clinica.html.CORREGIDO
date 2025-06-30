@@ -23,18 +23,19 @@
             <div class="alert alert-danger">
                 <strong>Por favor, corrija los siguientes errores:</strong>
                 <ul>
-                    {% for field_name, field_errors in paciente_form.errors.items %}
-                        {% for error in field_errors %}
-                            <li>{{ paciente_form|getattr:field_name.label|default:field_name }}: {{ error }}</li>
-                        {% endfor %}
+                    {% for field in paciente_form %}
+                        {% if field.errors %}
+                            <li>{{ field.label_tag }} {{ field.label }}: {{ field.errors|join:", " }}</li>
+                        {% endif %}
                     {% endfor %}
-                    {% for field_name, field_errors in historia_form.errors.items %}
-                         {% for error in field_errors %}
-                            <li>{{ historia_form|getattr:field_name.label|default:field_name }}: {{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                     {% for error in paciente_form.non_field_errors %}
+                    {% for error in paciente_form.non_field_errors %}
                         <li>{{ error }}</li>
+                    {% endfor %}
+
+                    {% for field in historia_form %}
+                        {% if field.errors %}
+                             <li>{{ field.label_tag }} {{ field.label }}: {{ field.errors|join:", " }}</li>
+                        {% endif %}
                     {% endfor %}
                     {% for error in historia_form.non_field_errors %}
                         <li>{{ error }}</li>
