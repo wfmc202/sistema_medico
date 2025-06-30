@@ -66,6 +66,19 @@ class HistoriaClinicaEmergenciaForm(forms.ModelForm):
         # Marcar campos de fecha/hora como no requeridos si sus contrapartes de modelo son blank=True, null=True
         # Esto se maneja mejor directamente en la definición del campo arriba con required=False
 
+        # Asegurar que los campos de signos vitales usen NumberInput
+        vital_signs_fields = [
+            'presion_arterial_sistolica', 'presion_arterial_diastolica',
+            'frecuencia_cardiaca_lpm', 'frecuencia_respiratoria_rpm',
+            'temperatura_celsius', 'saturacion_oxigeno_porc',
+            'glasgow_ocular', 'glasgow_verbal', 'glasgow_motora', 'glasgow_total',
+            'glucometria_mg_dl'
+        ]
+        for field_name in vital_signs_fields:
+            if field_name in self.fields:
+                self.fields[field_name].widget = forms.NumberInput(attrs={'class': 'form-control vital-input'}) # Agregada clase para posible JS/CSS específico
+
+
     # Podríamos añadir métodos clean_ individualizados si es necesario,
     # por ejemplo, para combinar fecha y hora antes de guardar, o en la vista.
     # Por ahora, la combinación de fecha y hora se hará en la vista.
@@ -83,17 +96,6 @@ class HistoriaClinicaEmergenciaForm(forms.ModelForm):
     # Por ahora, usamos los PositiveIntegerFields del modelo que ya limitan a no negativos.
     # El widget por defecto es NumberInput.
 
-    # Asegurar que los campos de signos vitales usen NumberInput
-    vital_signs_fields = [
-        'presion_arterial_sistolica', 'presion_arterial_diastolica',
-        'frecuencia_cardiaca_lpm', 'frecuencia_respiratoria_rpm',
-        'temperatura_celsius', 'saturacion_oxigeno_porc',
-        'glasgow_ocular', 'glasgow_verbal', 'glasgow_motora', 'glasgow_total',
-        'glucometria_mg_dl'
-    ]
-    for field_name in vital_signs_fields:
-        if field_name in self.fields:
-            self.fields[field_name].widget = forms.NumberInput(attrs={'class': 'form-control'})
 
 # Formulario combinado para crear Paciente e Historia en un solo paso (opcional, más complejo de manejar en la vista)
 # class CombinedPacienteHistoriaForm(forms.Form):
