@@ -1,0 +1,333 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Historias Clínicas{% endblock %}</title>
+    <!-- Bootstrap CSS (opcional, pero recomendado para un buen estilo base) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos del base.html original */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+            padding-top: 80px; /* Espacio para la barra de navegación fija */
+        }
+
+        .navbar-brand-custom {
+            font-weight: bold;
+            color: #fff !important;
+        }
+
+        .nav-link-custom {
+            color: #f0f0f0 !important;
+        }
+        .nav-link-custom:hover {
+            color: #fff !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto; /* Ajustado para dejar espacio a la navbar */
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3a8a 100%);
+            color: white;
+            padding: 20px; /* Reducido un poco */
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px; /* Reducido un poco */
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .header .version, .header .date {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+
+        .form-content {
+            padding: 25px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f1f5f9;
+            padding: 12px 18px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: bold;
+            font-size: 17px;
+            color: #1e3a8a;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* Reducido */
+            margin-bottom: 15px; /* Reducido */
+            align-items: flex-start; /* Alinea los labels con los inputs */
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 180px; /* Ajustado */
+        }
+         .form-group.small { min-width: 100px; flex: 0 0 100px; }
+        .form-group.medium { min-width: 150px; flex: 0 0 150px; }
+        .form-group.large { flex: 2; }
+        .form-group.full { flex: 1 1 100%; }
+
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="tel"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 10px; /* Ajustado */
+            border: 1px solid #ced4da; /* Estilo Bootstrap */
+            border-radius: 4px; /* Estilo Bootstrap */
+            font-size: 14px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        /* Estilos para widgets de Django */
+        input[type="checkbox"], input[type="radio"] {
+            width: auto;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #80bdff; /* Estilo Bootstrap Focus */
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Estilo Bootstrap Focus */
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px; /* Ajustado */
+        }
+
+        textarea.large {
+            min-height: 100px; /* Ajustado */
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Reducido */
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"]{
+             width: auto; margin: 0;
+        }
+        .checkbox-item label { margin: 0; cursor: pointer; font-weight: normal; }
+        .checkbox-item:hover { background: #f3f4f6; border-color: #d1d5db; }
+
+
+        .priority-scale {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .priority-item {
+            display: flex;
+            /* flex-direction: column; */
+            align-items: center; /* Alinea el radio y el label horizontalmente */
+            padding: 8px 12px; /* Ajustado */
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 45px; /* Ajustado */
+        }
+        .priority-item input[type="radio"] {
+            margin-bottom: 0; /* Eliminado */
+            margin-right: 5px; /* Espacio entre radio y label */
+        }
+        .priority-item label { font-weight: normal; margin: 0; } /* Estilo para label de radio */
+
+        .priority-item:hover { border-color: #3b82f6; }
+        .priority-item.level-1 { border-color: #dc2626; background: #fef2f2; }
+        .priority-item.level-2 { border-color: #ea580c; background: #fff7ed; }
+        .priority-item.level-3 { border-color: #eab308; background: #fefce8; }
+        .priority-item.level-4 { border-color: #16a34a; background: #f0fdf4; }
+        .priority-item.level-5 { border-color: #2563eb; background: #eff6ff; }
+        /* Para que el radio button de Django funcione bien con la estructura HTML */
+        .priority-scale ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+        .priority-scale li { margin: 0; }
+
+
+        .vital-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Ajustado */
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .vital-item { text-align: center; }
+        .vital-item input { text-align: center; font-weight: bold; }
+
+        .glasgow-scale { background: #f8fafc; padding: 12px; border-radius: 8px; margin-top: 12px; }
+        .glasgow-row { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+
+        .signature-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+        }
+        .signature-box {
+            text-align: center;
+            padding: 30px 15px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .print-button {
+            /* Se puede manejar con un botón normal y JS, o quitar si no es esencial para la app web */
+            display: none; /* Oculto por defecto, se puede añadir si se necesita imprimir la vista de detalle */
+        }
+
+        /* Clases de Bootstrap para botones */
+        .btn { display: inline-block; font-weight: 400; color: #212529; text-align: center; vertical-align: middle; cursor: pointer; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; background-color: transparent; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+        .btn-primary { color: #fff; background-color: #007bff; border-color: #007bff; }
+        .btn-primary:hover { color: #fff; background-color: #0069d9; border-color: #0062cc; }
+        .btn-lg { padding: .5rem 1rem; font-size: 1.25rem; line-height: 1.5; border-radius: .3rem; }
+        .mt-3 { margin-top: 1rem !important; }
+        .mt-4 { margin-top: 1.5rem !important; }
+        .text-center { text-align: center !important; }
+        .invalid-feedback { display: block; width: 100%; margin-top: .25rem; font-size: 80%; color: #dc3545; }
+        .alert { position: relative; padding: .75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
+        .alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+
+
+        @media print {
+            body { background: white; padding: 0; padding-top: 0; }
+            .navbar, .print-button { display: none; }
+            .container { box-shadow: none; border-radius: 0; margin: 0; max-width: 100%; }
+            .section { break-inside: avoid; page-break-inside: avoid; }
+        }
+
+        @media (max-width: 768px) {
+            .form-row { flex-direction: column; gap: 10px; }
+            .form-group { min-width: 100% !important; flex-basis: auto !important; }
+            .priority-scale, .vital-signs { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+            .signature-section { grid-template-columns: 1fr; }
+            body { padding: 10px; padding-top: 70px; }
+        }
+
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand navbar-brand-custom" href="{% url 'listar_historias_clinicas' %}">Historias Clínicas EM</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{% url 'listar_historias_clinicas' %}">Listar Historias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{% url 'crear_historia_clinica' %}">Nueva Historia</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="navbar-text text-light mr-3">
+                                Hola, {{ user.username }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-light">Cerrar Sesión</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="{% url 'login' %}">Iniciar Sesión</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main role="main">
+        {% block content %}
+        <!-- El contenido específico de cada página irá aquí -->
+        {% endblock %}
+    </main>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery (opcional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

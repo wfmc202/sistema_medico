@@ -1,0 +1,230 @@
+{% extends "gestion_historias/base_template.html" %}
+
+{% block title %}Detalle Historia Clínica: {{ paciente.nombre }} - {{ historia.fecha_hora_llegada|date:"d/m/Y H:i" }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Historia Clínica Sala de Emergencia</h1>
+        <div class="version">DEM-FOCEAS-001 Versión: 02</div>
+        <div class="date">Fecha de aprobación: 20/6/2022</div>
+    </div>
+
+    <div class="form-content">
+        <button class="print-button btn btn-info mb-3" onclick="window.print()">🖨️ Imprimir Historia</button>
+
+        <!-- Información Personal del Paciente -->
+        <div class="section">
+            <div class="section-header">Información Personal del Paciente</div>
+            <div class="section-content">
+                <p><strong>Nombre:</strong> {{ paciente.nombre|default:"N/A" }}</p>
+                <p><strong>Apodo:</strong> {{ paciente.apodo|default:"N/A" }}</p>
+                <p><strong>Sexo:</strong> {{ paciente.get_sexo_display|default:"N/A" }}</p>
+                <p><strong>Edad:</strong> {{ paciente.edad|default:"N/A" }} años</p>
+                <p><strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento|date:"d/m/Y"|default:"N/A" }}</p>
+                <p><strong>Cédula/Pasaporte/NUI:</strong> {{ paciente.cedula|default:"N/A" }}</p>
+                <p><strong>Aseguradora:</strong> {{ paciente.aseguradora|default:"N/A" }}</p>
+                <p><strong>NSS:</strong> {{ paciente.nss|default:"N/A" }}</p>
+                <p><strong>Grupo Sanguíneo:</strong> {{ paciente.get_grupo_sanguineo_display|default:"N/A" }}</p>
+                <p><strong>Peso (kg):</strong> {{ paciente.peso_kg|default:"N/A" }}</p>
+                <p><strong>Talla (cm):</strong> {{ paciente.talla_cm|default:"N/A" }}</p>
+                <p><strong>Alérgico(a):</strong> {{ paciente.alergias|default:"N/A" }}</p>
+                <p><strong>Dirección:</strong> {{ paciente.direccion|default:"N/A" }}</p>
+                <p><strong>Nacionalidad:</strong> {{ paciente.nacionalidad|default:"N/A" }}</p>
+                <p><strong>Teléfono:</strong> {{ paciente.telefono|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Información General de la Historia -->
+        <div class="section">
+            <div class="section-header">Información General de la Historia</div>
+            <div class="section-content">
+                <p><strong>Fecha y Hora de Llegada:</strong> {{ historia.fecha_hora_llegada|date:"d/m/Y H:i"|default:"N/A" }}</p>
+                <p><strong>No. de Expediente Clínico:</strong> {{ historia.numero_expediente_clinico|default:"N/A" }}</p>
+                <p><strong>Fecha y Hora de Clasificación:</strong> {{ historia.fecha_hora_clasificacion|date:"d/m/Y H:i"|default:"N/A" }}</p>
+                <p><strong>Prioridad del Triaje:</strong> {{ historia.get_prioridad_triaje_display|default:"N/A" }}</p>
+                <p><strong>Fecha y Hora de Fin de Clasificación:</strong> {{ historia.fecha_hora_fin_clasificacion|date:"d/m/Y H:i"|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Vía de Llegada -->
+        <div class="section">
+            <div class="section-header">Vía de Llegada</div>
+            <div class="section-content">
+                <ul>
+                    {% if historia.llego_medios_propios %}<li>Medios propios</li>{% endif %}
+                    {% if historia.llego_911 %}<li>9-1-1</li>{% endif %}
+                    {% if historia.llego_crue %}<li>CRUE</li>{% endif %}
+                    {% if historia.llego_ambulancia_privada %}<li>Ambulancia Privada</li>{% endif %}
+                </ul>
+                <p><strong>Paramédico:</strong> {{ historia.paramedico_responsable|default:"N/A" }}</p>
+                <p><strong>Ambulancia No.:</strong> {{ historia.ambulancia_numero|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Acompañante -->
+        <div class="section">
+            <div class="section-header">Información del Acompañante</div>
+            <div class="section-content">
+                <p><strong>Nombre:</strong> {{ historia.acompanante_nombre|default:"N/A" }}</p>
+                <p><strong>Parentesco:</strong> {{ historia.acompanante_parentesco|default:"N/A" }}</p>
+                <p><strong>Teléfono:</strong> {{ historia.acompanante_telefono|default:"N/A" }}</p>
+                <p><strong>Dirección:</strong> {{ historia.acompanante_direccion|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Motivos de la Consulta -->
+        <div class="section">
+            <div class="section-header">Motivos de la Consulta</div>
+            <div class="section-content">
+                <p><strong>Motivos seleccionados:</strong></p>
+                <ul>
+                    {% if historia.motivo_cefalea %}<li>Cefalea</li>{% endif %}
+                    {% if historia.motivo_tos %}<li>Tos</li>{% endif %}
+                    {% if historia.motivo_palpitaciones %}<li>Palpitaciones</li>{% endif %}
+                    {% if historia.motivo_hematemesis %}<li>Hematemesis</li>{% endif %}
+                    {% if historia.motivo_disuria %}<li>Disuria</li>{% endif %}
+                    {% if historia.motivo_melena %}<li>Melena</li>{% endif %}
+                    {% if historia.motivo_mareos %}<li>Mareos</li>{% endif %}
+                    {% if historia.motivo_epistaxis %}<li>Epistaxis</li>{% endif %}
+                    {% if historia.motivo_nauseas %}<li>Náuseas</li>{% endif %}
+                    {% if historia.motivo_dolor_toracico %}<li>Dolor torácico</li>{% endif %}
+                    {% if historia.motivo_hematuria %}<li>Hematuria</li>{% endif %}
+                    {% if historia.motivo_herida_arma %}<li>Herida de arma blanca o arma de fuego</li>{% endif %}
+                    {% if historia.motivo_vomitos %}<li>Vómitos</li>{% endif %}
+                    {% if historia.motivo_dolor_abdominal %}<li>Dolor abdominal</li>{% endif %}
+                    {% if historia.motivo_sangrado_transvaginal %}<li>Sangrado transvaginal</li>{% endif %}
+                    {% if historia.motivo_intoxicacion %}<li>Intoxicación</li>{% endif %}
+                    {% if historia.motivo_diarrea %}<li>Diarrea</li>{% endif %}
+                    {% if historia.motivo_disnea %}<li>Disnea</li>{% endif %}
+                    {% if historia.motivo_politraumatismo %}<li>Politraumatismo</li>{% endif %}
+                    {% if historia.motivo_tec %}<li>TEC (Traumatismo Encéfalo Craneano)</li>{% endif %}
+                    {% if historia.motivo_crisis_hipertensiva %}<li>Crisis hipertensiva</li>{% endif %}
+                    {% if historia.motivo_convulsiones %}<li>Convulsiones</li>{% endif %}
+                    {% if historia.motivo_quemaduras %}<li>Quemaduras</li>{% endif %}
+                    {% if historia.motivo_sincope %}<li>Síncope</li>{% endif %}
+                    {% if historia.motivo_dolor_lumbar %}<li>Dolor lumbar</li>{% endif %}
+                </ul>
+                {% if historia.motivo_otros_descripcion %}<p><strong>Otros Motivos:</strong> {{ historia.motivo_otros_descripcion }}</p>{% endif %}
+                <p><strong>Principal motivo de consulta (descripción):</strong><br>{{ historia.motivo_consulta_principal_descripcion|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Historia de la enfermedad actual y cronología:</strong><br>{{ historia.enfermedad_actual_historia|linebreaksbr|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Antecedentes -->
+        <div class="section">
+            <div class="section-header">Antecedentes</div>
+            <div class="section-content">
+                <p><strong>Personales Patológicos:</strong><br>{{ historia.antecedentes_personales_patologicos|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Quirúrgicos:</strong><br>{{ historia.antecedentes_quirurgicos|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Gineco-obstétricos:</strong><br>{{ historia.antecedentes_ginecobstetricos|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Traumáticos:</strong><br>{{ historia.antecedentes_traumaticos|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Familiares:</strong><br>{{ historia.antecedentes_familiares|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Hábitos Tóxicos:</strong><br>{{ historia.habitos_toxicos|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Medicamentos de Uso Actual:</strong><br>{{ historia.medicamentos_uso_actual|linebreaksbr|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Revisión por Sistemas -->
+        <div class="section">
+            <div class="section-header">Revisión por Sistemas</div>
+            <div class="section-content">
+                <p>{{ historia.revision_sistemas_descripcion|linebreaksbr|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Signos Vitales y Escala de Glasgow -->
+        <div class="section">
+            <div class="section-header">Signos Vitales y Escala de Glasgow</div>
+            <div class="section-content">
+                <p><strong>Presión Arterial:</strong> {{ historia.presion_arterial_sistolica|default:"N/A" }} / {{ historia.presion_arterial_diastolica|default:"N/A" }} mmHg</p>
+                <p><strong>Frecuencia Cardíaca:</strong> {{ historia.frecuencia_cardiaca_lpm|default:"N/A" }} lpm</p>
+                <p><strong>Frecuencia Respiratoria:</strong> {{ historia.frecuencia_respiratoria_rpm|default:"N/A" }} rpm</p>
+                <p><strong>Temperatura:</strong> {{ historia.temperatura_celsius|default:"N/A" }} °C</p>
+                <p><strong>Saturación de O2:</strong> {{ historia.saturacion_oxigeno_porc|default:"N/A" }} %</p>
+                <p><strong>Glucometría:</strong> {{ historia.glucometria_mg_dl|default:"N/A" }} mg/dL</p>
+                <h5 class="mt-3">Escala de Glasgow</h5>
+                <p>Ocular: {{ historia.glasgow_ocular|default:"N/A" }} | Verbal: {{ historia.glasgow_verbal|default:"N/A" }} | Motora: {{ historia.glasgow_motora|default:"N/A" }}</p>
+                <p><strong>Total Glasgow:</strong> {{ historia.glasgow_total|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Examen Físico -->
+        <div class="section">
+            <div class="section-header">Examen Físico</div>
+            <div class="section-content">
+                 <p>{{ historia.examen_fisico_descripcion|linebreaksbr|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="section">
+            <div class="section-header">Diagnóstico</div>
+            <div class="section-content">
+                <p><strong>Presuntivo:</strong><br>{{ historia.diagnostico_presuntivo|linebreaksbr|default:"N/A" }}</p>
+                <p><strong>Definitivo (CIE-10):</strong> {{ historia.diagnostico_definitivo_cie10|default:"N/A" }}</p>
+                <p><strong>Definitivo (Descripción):</strong><br>{{ historia.diagnostico_definitivo_descripcion|linebreaksbr|default:"N/A" }}</p>
+            </div>
+        </div>
+
+        <!-- Plan de Tratamiento y Destino del Paciente -->
+        <div class="section">
+            <div class="section-header">Plan de Tratamiento y Destino del Paciente</div>
+            <div class="section-content">
+                <p><strong>Plan de Tratamiento e Indicaciones:</strong><br>{{ historia.plan_tratamiento_indicaciones|linebreaksbr|default:"N/A" }}</p>
+
+                <p class="mt-3"><strong>Destino del Paciente:</strong></p>
+                <ul>
+                    {% if historia.destino_domicilio %}<li>Domicilio</li>{% endif %}
+                    {% if historia.destino_sala %}<li>Sala</li>{% endif %}
+                    {% if historia.destino_uci %}<li>UCI</li>{% endif %}
+                    {% if historia.destino_quirofano %}<li>Quirófano</li>{% endif %}
+                    {% if historia.destino_morgue %}<li>Morgue</li>{% endif %}
+                    {% if historia.destino_transferencia %}<li>Transferencia a otra unidad</li>{% endif %}
+                    {% if historia.destino_fuga %}<li>Fuga</li>{% endif %}
+                    {% if historia.destino_otro %}<li>Otro</li>{% endif %}
+                </ul>
+                {% if historia.destino_paciente_observaciones %}<p><strong>Observaciones sobre el destino:</strong> {{ historia.destino_paciente_observaciones }}</p>{% endif %}
+            </div>
+        </div>
+
+        <!-- Firmas -->
+        <div class="section">
+            <div class="section-header">Firmas</div>
+            <div class="section-content">
+                <p><strong>Médico que realizó la historia:</strong> {{ historia.medico_tratante.get_full_name|default:historia.medico_tratante.username|default:"N/A" }}</p>
+                <div class="signature-section">
+                    <div class="signature-box">
+                        Firma y Sello del Médico Residente de Emergencia
+                        <br><br>
+                        _________________________
+                    </div>
+                    <div class="signature-box">
+                        Firma y Sello del Médico Tratante
+                        <br><br>
+                        _________________________
+                        <br>
+                        ({{ historia.medico_tratante.get_full_name|default:historia.medico_tratante.username|default:"N/A" }})
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 text-center">
+             <a href="{% url 'listar_historias_clinicas' %}" class="btn btn-secondary">Volver al Listado</a>
+             <!-- TODO: Añadir botón de Editar Historia Clínica -->
+             <!-- <a href="#" class="btn btn-primary">Editar Historia</a> -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var printButton = document.querySelector('.print-button');
+        if(printButton) {
+            printButton.style.display = 'inline-block'; // Mostrar el botón de imprimir en esta vista
+        }
+    });
+</script>
+{% endblock %}
