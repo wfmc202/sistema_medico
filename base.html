@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia Clínica de Emergencias</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3a8a 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header .version {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .header .date {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f1f5f9;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #1e3a8a;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.small {
+            min-width: 120px;
+            flex: 0 0 120px;
+        }
+
+        .form-group.medium {
+            min-width: 180px;
+            flex: 0 0 180px;
+        }
+
+        .form-group.large {
+            flex: 2;
+        }
+
+        .form-group.full {
+            flex: 1 1 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        input[type="text"], 
+        input[type="number"], 
+        input[type="date"], 
+        input[type="time"], 
+        input[type="tel"], 
+        input[type="email"],
+        select, 
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        textarea.large {
+            height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .priority-scale {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .priority-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 50px;
+        }
+
+        .priority-item:hover {
+            border-color: #3b82f6;
+        }
+
+        .priority-item input[type="radio"] {
+            margin-bottom: 5px;
+        }
+
+        .priority-item.level-1 { border-color: #dc2626; background: #fef2f2; }
+        .priority-item.level-2 { border-color: #ea580c; background: #fff7ed; }
+        .priority-item.level-3 { border-color: #eab308; background: #fefce8; }
+        .priority-item.level-4 { border-color: #16a34a; background: #f0fdf4; }
+        .priority-item.level-5 { border-color: #2563eb; background: #eff6ff; }
+
+        .vital-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .vital-item {
+            text-align: center;
+        }
+
+        .vital-item input {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .glasgow-scale {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .glasgow-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .signature-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .signature-box {
+            text-align: center;
+            padding: 40px 20px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: #047857;
+        }
+
+        @media print {
+            body { 
+                background: white; 
+                padding: 0;
+            }
+            .container { 
+                box-shadow: none; 
+                border-radius: 0;
+            }
+            .print-button { 
+                display: none; 
+            }
+            .section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            .form-group {
+                min-width: 100%;
+            }
+            .priority-scale, .vital-signs {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+            .signature-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Imprimir</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Historia Clínica Sala de Emergencia</h1>
+            <div class="version">DEM-FOCEAS-001 Versión: 02</div>
+            <div class="date">Fecha de aprobación: 20/6/2022</div>
+        </div>
+
+        <div class="form-content">
+            <!-- Información General -->
+            <div class="section">
+                <div class="section-header">Información General</div>
+                <div class="section-content">
+                    <div class="form-row">
+                        <div class="form-group medium">
+                            <label for="fecha">Fecha:</label>
+                            <input type="date" id="fecha" name="fecha">
+                        </div>
+                        <div class="form-group">
+                            <label for="expediente">No. de Expediente Clínico:</label>
+                            <input type="text" id="expediente" name="expediente">
+                        </div>
+                        <div class="form-group medium">
+                            <label for="hora_llegada">Hora de Llegada:</label>
+                            <input type="time" id="hora_llegada" name="hora_llegada">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group medium">
+                            <label for="hora_clasificacion">Hora de Clasificación:</label>
+                            <input type="time" id="hora_clasificacion" name="hora_clasificacion">
+                        </div>
+                        <div class="form-group large">
+                            <label>Prioridad del Triaje:</label>
+                            <div class="priority-scale">
+                                <div class="priority-item level-1">
+                                    <input type="radio" name="prioridad" value="I" id="pri1">
+                                    <label for="pri1">I</label>
+                                </div>
+                                <div class="priority-item level-2">
+                                    <input type="radio" name="prioridad" value="II" id="pri2">
+                                    <label for="pri2">II</label>
+                                </div>
+                                <div class="priority-item level-3">
+                                    <input type="radio" name="prioridad" value="III" id="pri3">
+                                    <label for="pri3">III</label>
+                                </div>
+                                <div class="priority-item level-4">
+                                    <input type="radio" name="prioridad" value="IV" id="pri4">
+                                    <label for="pri4">IV</label>
+                                </div>
+                                <div class="priority-item level-5">
+                                    <input type="radio" name="prioridad" value="V" id="pri5">
+                                    <label for="pri5">V</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group medium">
+                            <label for="hora_fin">Hora de Fin de la Clasificación:</label>
+                            <input type="time" id="hora_fin" name="hora_fin">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="section">
+                <div class="section-header">Información Personal</div>
+                <div class="section-content">
+                    <div class="form-row">
+                        <div class="form-group large">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre">
+                        </div>
+                        <div class="form-group">
+                            <label for="apodo">Apodo:</label>
+                            <input type="text" id="apodo" name="apodo">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group small">
+                            <label for="sexo">Sexo:</label>
+                            <select id="sexo" name="sexo">
+                                <option value="">Seleccionar</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                        </div>
+                        <div class="form-group small">
+                            <label for="edad">Edad:</label>
+                            <input type="number" id="edad" name="edad" min="0" max="120">
+                        </div>
+                        <div class="form-group medium">
+                            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+                            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento">
+                        </div>
+                        <div class="form-group">
+                            <label for="cedula">Cédula/Pasaporte/NUI:</label>
+                            <input type="text" id="cedula" name="cedula">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="aseguradora">Aseguradora:</label>
+                            <input type="text" id="aseguradora" name="aseguradora">
+                        </div>
+                        <div class="form-group">
+                            <label for="nss">NSS:</label>
+                            <input type="text" id="nss" name="nss">
+                        </div>
+                        <div class="form-group medium">
+                            <label for="grupo_sanguineo">Grupo Sanguíneo:</label>
+                            <select id="grupo_sanguineo" name="grupo_sanguineo">
+                                <option value="">Seleccionar</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group small">
+                            <label for="peso">Peso (kg):</label>
+                            <input type="number" id="peso" name="peso" step="0.1" min="0">
+                        </div>
+                        <div class="form-group small">
+                            <label for="talla">Talla (cm):</label>
+                            <input type="number" id="talla" name="talla" min="0">
+                        </div>
+                        <div class="form-group large">
+                            <label for="alergico">Alérgico(a):</label>
+                            <input type="text" id="alergico" name="alergico" placeholder="Especificar alergias">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label for="direccion">Dirección:</label>
+                            <input type="text" id="direccion" name="direccion">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nacionalidad">Nacionalidad:</label>
+                            <input type="text" id="nacionalidad" name="nacionalidad">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono:</label>
+                            <input type="tel" id="telefono" name="telefono">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vía de Llegada -->
+            <div class="section">
+                <div class="section-header">Vía de Llegada</div>
+                <div class="section-content">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="medios_propios" name="via_llegada" value="medios_propios">
+                            <label for="medios_propios">Medios propios</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="911" name="via_llegada" value="911">
+                            <label for="911">9-1-1</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="crue" name="via_llegada" value="crue">
+                            <label for="crue">CRUE</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="privada" name="via_llegada" value="privada">
+                            <label for="privada">Privada</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paramedico">Paramédico:</label>
+                            <input type="text" id="paramedico" name="paramedico">
+                        </div>
+                        <div class="form-group">
+                            <label for="ambulancia">Ambulancia No.:</label>
+                            <input type="text" id="ambulancia" name="ambulancia">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="acompanante">Acompañante:</label>
+                            <input type="text" id="acompanante" name="acompanante">
+                        </div>
+                        <div class="form-group">
+                            <label for="parentesco">Parentesco:</label>
+                            <input type="text" id="parentesco" name="parentesco">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono_acompanante">Teléfono:</label>
+                            <input type="tel" id="telefono_acompanante" name="telefono_acompanante">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label for="direccion_acompanante">Dirección del Acompañante:</label>
+                            <input type="text" id="direccion_acompanante" name="direccion_acompanante">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivos de la Consulta -->
+            <div class="section">
+                <div class="section-header">Motivos de la Consulta</div>
+                <div class="section-content">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cefalea" name="motivos" value="cefalea">
+                            <label for="cefalea">Cefalea</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tos" name="motivos" value="tos">
+                            <label for="tos">Tos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="palpitaciones" name="motivos" value="palpitaciones">
+                            <label for="palpitaciones">Palpitaciones</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hematemesis" name="motivos" value="hematemesis">
+                            <label for="hematemesis">Hematemesis</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="disuria" name="motivos" value="disuria">
+                            <label for="disuria">Disuria</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="melena" name="motivos" value="melena">
+                            <label for="melena">Melena</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mareos" name="motivos" value="mareos">
+                            <label for="mareos">Mareos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="epistaxis" name="motivos" value="epistaxis">
+                            <label for="epistaxis">Epistaxis</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="nauseas" name="motivos" value="nauseas">
+                            <label for="nauseas">Náuseas</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="dolor_toracico" name="motivos" value="dolor_toracico">
+                            <label for="dolor_toracico">Dolor torácico</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hematuria" name="motivos" value="hematuria">
+                            <label for="hematuria">Hematuria</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="herida_arma" name="motivos" value="herida_arma">
+                            <label for="herida_arma">Herida de arma blanca o arma de fuego</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" i
