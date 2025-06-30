@@ -103,12 +103,11 @@
             <div class="section-header">Vía de Llegada</div>
             <div class="section-content">
                 <div class="checkbox-group">
-                    {% for field_name in historia_form.fields %}
-                        {% if field_name|slice:":6" == "llego_" %}
+                    {% for field in historia_form %}
+                        {% if field.name|slice:":6" == "llego_" %}
                             <div class="checkbox-item">
-                                {{ historia_form|getattr:field_name }}
-                                {{ historia_form|getattr:field_name.label_tag }}
-                                <label for="{{ historia_form|getattr:field_name.id_for_label }}">{{ historia_form|getattr:field_name.label }}</label>
+                                {{ field }} {# Renderiza el input checkbox #}
+                                {{ field.label_tag }} {# Renderiza el label asociado al checkbox #}
                             </div>
                         {% endif %}
                     {% endfor %}
